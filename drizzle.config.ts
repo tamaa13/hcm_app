@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { defineConfig } from 'drizzle-kit';
+import { readFileSync } from 'fs';
 
 export default defineConfig({
    out: './drizzle',
@@ -12,6 +13,10 @@ export default defineConfig({
       user: process.env.DATABASE_USER!,
       password: process.env.DATABASE_USER_PASSWORD!,
       port: parseInt(process.env.DATABASE_PORT!),
-      ssl: false,
+      ssl: {
+         ca: readFileSync('./ca.pem').toString(),
+         // OR
+         // rejectUnauthorized: false, // Only for development/testing with self-signed certs
+       },
    },
 });
