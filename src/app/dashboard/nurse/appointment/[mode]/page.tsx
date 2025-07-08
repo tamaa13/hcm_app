@@ -1,7 +1,7 @@
 'use client';
 
 import Form, { TFormProps } from '@/components/custom/form';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { getAllSchedules } from '@/services/schedules.service';
@@ -28,6 +28,11 @@ import { Trash2 } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import {
+   getMedicalByAppointmentId,
+   updateMedicalRecord,
+} from '@/services/medicalRecords.service';
+import { useGlobalContext } from '@/app/globalProvider';
 
 function Page() {
    const router = useRouter();
@@ -35,6 +40,8 @@ function Page() {
    const searchParams = useSearchParams();
 
    const [initialValues, setInitialValues] = useState<any>({});
+
+   const { states } = useGlobalContext();
 
    async function onSubmit(formData: FormData) {
       try {
@@ -143,18 +150,15 @@ function Page() {
          if (appointmentId) {
             const response = await getAppointment(appointmentId);
             const doctorId = String(response.data?.doctorId);
-
             if (doctorsData && patientsData) {
+               setChosenDoctor(doctorId);
+               await fetchSchedulesSelection(doctorId);
                setInitialValues({
                   ...response.data,
                   patientId: String(response.data?.patientId),
                   doctorId,
                   scheduleId: String(response?.data?.scheduleId),
                });
-
-               setChosenDoctor(doctorId);
-
-               await fetchSchedulesSelection(doctorId);
             }
          }
 
@@ -171,6 +175,49 @@ function Page() {
       if (chosenDoctor) fetchSchedulesSelection(chosenDoctor);
       else setSchedules([]);
    }, [chosenDoctor]);
+
+   const onMedicalRecordSubmit = useCallback(
+      async function (formData: FormData) {
+         try {
+            formData?.append('nurseId', states?.user?.nurseId);
+
+            console.log({ user: states?.user });
+            const response = await updateMedicalRecord(formData);
+
+            if (!response?.success) {
+               toast.info(response?.msg);
+            } else {
+               router.back();
+            }
+
+            return response;
+         } catch (error: any) {
+            toast.error(error.toString());
+         }
+      },
+      [states?.user],
+   );
+
+   const [medicalRecordInitialValues, setMedicalRecordInitialValues] =
+      useState<any>({});
+   async function fetchMedicalRecord() {
+      const response = await getMedicalByAppointmentId(
+         searchParams.get('id') || '',
+      );
+
+      if (response.success) {
+         setMedicalRecordInitialValues({
+            ...response.data,
+            patientName: response?.data?.patient?.name,
+            doctorName: response?.data?.doctor?.name,
+            nurseName: response?.data?.nurse?.name,
+         });
+      }
+   }
+   useEffect(() => {
+      const appointmentId = searchParams.get('id');
+      if (appointmentId) fetchMedicalRecord();
+   }, [searchParams.get('id')]);
 
    const formFields: TFormProps['fields'] = useMemo(
       () =>
@@ -275,6 +322,10 @@ function Page() {
                           inputProps: {
                              name: 'status',
                              required: true,
+                             disabled:
+                                params.mode === 'detail' &&
+                                !!Object.keys(medicalRecordInitialValues)
+                                   .length,
                           },
                           isSelect: true,
                           options: [
@@ -300,44 +351,257 @@ function Page() {
                  },
               ]
             : [],
-      [formReady, schedules, chosenDoctor, doctors, patients],
+      [formReady, schedules, chosenDoctor, doctors, patients, initialValues],
    );
+
+   const medicalRecordsFormFields: any[] = useMemo(() => {
+      if (Object.keys(medicalRecordInitialValues).length)
+         return [
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Kode Kunjungan',
+                     inputProps: {
+                        name: 'appointmentId',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Kode Pasien',
+                     inputProps: {
+                        name: 'patientId',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Nama Pasien',
+                     inputProps: {
+                        name: 'patientName',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Kode Dokter',
+                     inputProps: {
+                        name: 'doctorId',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Nama Dokter',
+                     inputProps: {
+                        name: 'doctorName',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Kode Admin',
+                     inputProps: {
+                        name: 'nurseId',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Nama Admin',
+                     inputProps: {
+                        name: 'nurseName',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Diagnosis',
+                     inputProps: {
+                        name: 'diagnosis',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Gejala',
+                     inputProps: {
+                        name: 'symptoms',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Anemnesis',
+                     inputProps: {
+                        name: 'anemnesis',
+                        required: true,
+                        disabled: true,
+                     },
+                     isTextarea: true,
+                  },
+                  {
+                     label: 'Penanganan',
+                     inputProps: {
+                        name: 'treatment',
+                        required: true,
+                        disabled: true,
+                     },
+                     isTextarea: true,
+                  },
+               ],
+            },
+            {
+               label: 'Catatan',
+               inputProps: {
+                  name: 'notes',
+                  required: true,
+                  disabled: true,
+               },
+               isTextarea: true,
+            },
+            {
+               label: 'Resep',
+               inputProps: {
+                  name: 'recipe',
+                  required: true,
+                  disabled: true,
+               },
+               isTextarea: true,
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Biaya',
+                     inputProps: {
+                        name: 'totalFee',
+                        required: true,
+                        type: 'number',
+                        disabled:
+                           medicalRecordInitialValues?.paymentStatus === 'paid',
+                     },
+                  },
+                  {
+                     label: 'Status Pembayaran',
+                     inputProps: {
+                        name: 'paymentStatus',
+                        required: true,
+                        disabled:
+                           medicalRecordInitialValues?.paymentStatus === 'paid',
+                     },
+                     isSelect: true,
+                     options: [
+                        {
+                           label: 'Lunas',
+                           value: 'paid',
+                        },
+                        {
+                           label: 'Belum Lunas',
+                           value: 'unpaid',
+                        },
+                     ],
+                  },
+               ],
+            },
+         ];
+
+      return [];
+   }, [medicalRecordInitialValues]);
 
    return (
       <div className="w-fulll h-fulll flex flex-col items-center justify-center overflow-y-scroll">
          <div className="w-full p-8">
             <h2 className="text-lg font-bold">Informasi Kunjungan</h2>
          </div>
-         <div className="w-full p-8">
-            {formReady && (
-               <>
+         <div className="w-full p-8 flex flex-col gap-8">
+            <div>
+               {formReady && (
+                  <>
+                     <Form
+                        title="Informasi Jadwal Kunjungan"
+                        description="Informasi detail jadwal kunjungan"
+                        submitButtonCaption={
+                           params.mode === 'create' ? 'Buat' : 'Simpan'
+                        }
+                        fields={formFields}
+                        actionCallback={onSubmit}
+                        initialValues={
+                           params.mode === 'detail' ? initialValues : undefined
+                        }
+                        enableSubmitButton={
+                           !Object.keys(medicalRecordInitialValues).length
+                        }
+                     />
+                     {params.mode === 'detail' &&
+                        !Object.keys(medicalRecordInitialValues).length && (
+                           <div className="w-full my-4">
+                              <Button
+                                 variant={'destructive'}
+                                 className=" hover:cursor-pointer"
+                                 type="button"
+                                 onClick={onDelete}
+                              >
+                                 Hapus Kunjungan
+                                 <Trash2 />
+                              </Button>
+                           </div>
+                        )}
+                  </>
+               )}
+            </div>
+
+            <div>
+               {Object.keys(medicalRecordInitialValues)?.length > 0 && (
                   <Form
-                     title="Pendaftaran Jadwal Kunjungan"
-                     description="Silahkan mengisi detail jadwal kunjungan"
-                     submitButtonCaption={
-                        params.mode === 'create' ? 'Buat' : 'Simpan'
-                     }
-                     fields={formFields}
-                     actionCallback={onSubmit}
-                     initialValues={
-                        params.mode === 'detail' ? initialValues : undefined
+                     title="Histori Medis"
+                     description=""
+                     submitButtonCaption={'Simpan'}
+                     fields={medicalRecordsFormFields}
+                     actionCallback={onMedicalRecordSubmit}
+                     initialValues={medicalRecordInitialValues}
+                     enableSubmitButton={
+                        medicalRecordInitialValues?.paymentStatus !== 'paid'
                      }
                   />
-                  {params.mode === 'detail' && (
-                     <div className="w-full my-4">
-                        <Button
-                           variant={'destructive'}
-                           className=" hover:cursor-pointer"
-                           type="button"
-                           onClick={onDelete}
-                        >
-                           Hapus Kunjungan
-                           <Trash2 />
-                        </Button>
-                     </div>
-                  )}
-               </>
-            )}
+               )}
+            </div>
+
             {params.mode === 'create' && (
                <div className="w-full my-8 text-center">
                   <h2 className="text-lg font-semibold my-4">

@@ -1,7 +1,14 @@
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 
 function Page() {
-   return <div>Page</div>;
+   const router = useRouter();
+
+   useEffect(() => {
+      router.replace('/dashboard/patient/appointment');
+   }, []);
+
+   return null;
 }
 
 export default Page;

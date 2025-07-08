@@ -77,6 +77,8 @@ function Page() {
                appointmentId: response.data?.appointmentId,
                patientId: String(response.data?.patientId),
                doctorId,
+               totalFee: 0,
+               paymentStatus: 'unpaid',
             }));
          }
 
@@ -230,6 +232,7 @@ function Page() {
                      name: 'totalFee',
                      required: true,
                      type: 'number',
+                     disabled: true,
                   },
                },
                {
@@ -237,6 +240,7 @@ function Page() {
                   inputProps: {
                      name: 'paymentStatus',
                      required: true,
+                     disabled: true,
                   },
                   isSelect: true,
                   options: [

@@ -49,6 +49,9 @@ export async function updateMedicalRecord(payload: FormData) {
       const updatedMedicalRecord: any = Object.fromEntries(payload.entries());
 
       delete updatedMedicalRecord.complaint;
+      delete updatedMedicalRecord.patientName;
+      delete updatedMedicalRecord.doctorName;
+      delete updatedMedicalRecord.nurseName;
 
       if (updatedMedicalRecord?.nurseId) {
          const nurse = await db.query.nurses.findFirst({
@@ -114,6 +117,20 @@ export async function updateMedicalRecord(payload: FormData) {
          .where(eq(medicalRecords.recordId, updatedMedicalRecord?.recordId))
          .returning();
 
+         if (!!result?.[0] && result?.[0]?.paymentStatus === 'paid') {
+            await db
+               .update(appointments)
+               .set({ status: 'done' })
+               .where(
+                  eq(
+                     appointments?.appointmentId,
+                     updatedMedicalRecord?.appointmentId,
+                  ),
+               )
+               .returning();
+         }
+   
+
       return {
          success: !!result,
          data: result,
@@ -158,7 +175,42 @@ export async function getMedicalRecord(recordId?: string) {
       };
    }
 }
+export async function getMedicalByAppointmentId(appointmentId?: string) {
+   try {
+      const medicalRecordsResult = await db.query.medicalRecords.findFirst({
+         with: {
+            appointment: true,
+            nurse: true,
+            doctor: true,
+            patient: true,
+         },
+         where: (medicalRecords, { eq }) =>
+            eq(medicalRecords.appointmentId, appointmentId as any),
+      });
 
+      if (!medicalRecordsResult)
+         return {
+            success: false,
+            msg: 'There is no medical record for this appointment',
+         };
+
+      return {
+         success: true,
+         data: {
+            ...medicalRecordsResult,
+            createdAt: undefined,
+            updatedAt: undefined,
+         },
+         msg: 'Data fetched successfully',
+      };
+   } catch (err: any) {
+      console.error(err.toString());
+      return {
+         success: false,
+         msg: `An error occured ${err.toString()}`,
+      };
+   }
+}
 export async function deleteMedicalRecord(recordId?: string) {
    try {
       await db

@@ -9,7 +9,12 @@ export function middleware(request: NextRequest) {
 
    if (token && role && !path.includes(`${role?.value}`)) {
       return NextResponse.redirect(
-         new URL(`/dashboard/${role?.value}`, request.url),
+         new URL(
+            `/dashboard/${role?.value}${
+               role?.value === 'patient' ? '/appointment' : ''
+            }`,
+            request.url,
+         ),
       );
    }
 

@@ -244,9 +244,10 @@ function Page() {
                      actionCallback={onSubmit}
                      initialValues={initialValues}
                      enableSubmitButton={
-                        params.mode === 'detail' &&
-                        initialValues?.doctorId ===
-                           String(states?.user?.doctorId)
+                        (params.mode === 'detail' &&
+                           initialValues?.doctorId ===
+                              String(states?.user?.doctorId)) ||
+                        params.mode === 'create'
                      }
                   />
                )}
