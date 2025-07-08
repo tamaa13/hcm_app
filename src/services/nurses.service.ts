@@ -6,6 +6,8 @@ import { nurses } from '../db/schema';
 export async function registerNurse(payload: FormData) {
    try {
       const newNurse: any = Object.fromEntries(payload.entries());
+      
+      delete newNurse.age;
 
       const existingNurseByEmail = await db.query.nurses.findFirst({
          where: (nurses, { eq }) => eq(nurses.email, newNurse.email),

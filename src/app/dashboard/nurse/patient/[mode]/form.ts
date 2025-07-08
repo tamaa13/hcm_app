@@ -30,27 +30,27 @@ export const formFields: TFormProps['fields'] = [
          },
       ],
    },
-   {
-      horizontalFieldsContainer: true,
-      fields: [
-         {
-            label: 'Profession',
-            inputProps: {
-               name: 'profession',
-               required: true,
-               type: 'text',
-            },
-         },
-         {
-            label: 'ID Card',
-            inputProps: {
-               name: 'idCard',
-               required: true,
-               type: 'text',
-            },
-         },
-      ],
-   },
+   // {
+   //    horizontalFieldsContainer: true,
+   //    fields: [
+   //       {
+   //          label: 'Profession',
+   //          inputProps: {
+   //             name: 'profession',
+   //             required: true,
+   //             type: 'text',
+   //          },
+   //       },
+   //       {
+   //          label: 'ID Card',
+   //          inputProps: {
+   //             name: 'idCard',
+   //             required: true,
+   //             type: 'text',
+   //          },
+   //       },
+   //    ],
+   // },
    {
       horizontalFieldsContainer: true,
       fields: [
@@ -72,14 +72,14 @@ export const formFields: TFormProps['fields'] = [
          },
       ],
    },
-   {
-      label: 'Allergies',
-      inputProps: {
-         name: 'allergies',
-         required: true,
-         type: 'text',
-      },
-   },
+   // {
+   //    label: 'Allergies',
+   //    inputProps: {
+   //       name: 'allergies',
+   //       required: true,
+   //       type: 'text',
+   //    },
+   // },
    {
       horizontalFieldsContainer: true,
       fields: [
@@ -89,6 +89,15 @@ export const formFields: TFormProps['fields'] = [
                name: 'birthDate',
                required: true,
                type: 'date',
+            },
+         },
+         {
+            label: 'Usia',
+            inputProps: {
+               name: 'age',
+               required: true,
+               type: 'number',
+               disabled: true,
             },
          },
          {
@@ -109,53 +118,33 @@ export const formFields: TFormProps['fields'] = [
                },
             ],
          },
-         {
-            label: 'Blood Type',
-            inputProps: {
-               name: 'bloodType',
-               required: true,
-            },
-            isSelect: true,
-            options: [
-               {
-                  label: 'O',
-                  value: 'O',
-               },
-               {
-                  label: 'A',
-                  value: 'A',
-               },
-               {
-                  label: 'B',
-                  value: 'B',
-               },
-               {
-                  label: 'AB',
-                  value: 'AB',
-               },
-            ],
-         },
+         // {
+         //    label: 'Blood Type',
+         //    inputProps: {
+         //       name: 'bloodType',
+         //       required: true,
+         //    },
+         //    isSelect: true,
+         //    options: [
+         //       {
+         //          label: 'O',
+         //          value: 'O',
+         //       },
+         //       {
+         //          label: 'A',
+         //          value: 'A',
+         //       },
+         //       {
+         //          label: 'B',
+         //          value: 'B',
+         //       },
+         //       {
+         //          label: 'AB',
+         //          value: 'AB',
+         //       },
+         //    ],
+         // },
       ],
    },
-   {
-      horizontalFieldsContainer: true,
-      fields: [
-         {
-            label: 'Height (cm)',
-            inputProps: {
-               name: 'heightCm',
-               required: true,
-               type: 'number',
-            },
-         },
-         {
-            label: 'Weight (kg)',
-            inputProps: {
-               name: 'weightKg',
-               required: true,
-               type: 'number',
-            },
-         },
-      ],
-   },
+   // {src/app/dashboard/nurse/patient/[mode]/page.tsx
 ];

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Form from '@/components/custom/form';
 import {
    deletePatient,
@@ -8,7 +8,6 @@ import {
    registerPatient,
    updatePatient,
 } from '@/services/patients.service';
-import { formFields } from './form';
 import { toast } from 'react-toastify';
 import GlobalProvider from '@/app/globalProvider';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -95,14 +94,210 @@ function PageComponent() {
       async function getUser() {
          const response = await getPatientById(patientId || '');
 
-         setInitialValues(response.data);
+         setBirthDate(response?.data?.birthDate || '');
+         setInitialValues({
+            ...response.data,
+            age:
+               new Date().getFullYear() -
+               new Date(response?.data?.birthDate || '').getFullYear(),
+         });
       }
 
       if (patientId) {
          getUser();
          fetchAppointments();
+      } else {
+         setInitialValues({
+            age: 0,
+         });
       }
    }, []);
+   const [age, setAge] = useState<number>(0);
+   const [birthDate, setBirthDate] = useState<string>('');
+   useEffect(() => {
+      if (birthDate) {
+         setAge(new Date().getFullYear() - new Date(birthDate).getFullYear());
+         setInitialValues((prev: any) => ({
+            ...prev,
+            age: new Date().getFullYear() - new Date(birthDate).getFullYear(),
+         }));
+      }
+   }, [birthDate]);
+
+   const formFields: any[] = useMemo(
+      () => [
+         {
+            label: 'Name',
+            inputProps: {
+               name: 'name',
+               required: true,
+               type: 'text',
+            },
+         },
+         {
+            horizontalFieldsContainer: true,
+            fields: [
+               {
+                  label: 'Email',
+                  inputProps: {
+                     name: 'email',
+                     required: true,
+                     type: 'email',
+                  },
+               },
+               {
+                  label: 'Password',
+                  inputProps: {
+                     name: 'password',
+                     required: true,
+                     type: 'password',
+                  },
+               },
+            ],
+         },
+         // {
+         //    horizontalFieldsContainer: true,
+         //    fields: [
+         //       {
+         //          label: 'Profession',
+         //          inputProps: {
+         //             name: 'profession',
+         //             required: true,
+         //             type: 'text',
+         //          },
+         //       },
+         //       {
+         //          label: 'ID Card',
+         //          inputProps: {
+         //             name: 'idCard',
+         //             required: true,
+         //             type: 'text',
+         //          },
+         //       },
+         //    ],
+         // },
+         {
+            horizontalFieldsContainer: true,
+            fields: [
+               {
+                  label: 'Phone Number',
+                  inputProps: {
+                     name: 'phoneNumber',
+                     required: true,
+                     type: 'tel',
+                  },
+               },
+               {
+                  label: 'Address',
+                  inputProps: {
+                     name: 'address',
+                     required: true,
+                     type: 'text',
+                  },
+               },
+            ],
+         },
+         // {
+         //    label: 'Allergies',
+         //    inputProps: {
+         //       name: 'allergies',
+         //       required: true,
+         //       type: 'text',
+         //    },
+         // },
+         {
+            horizontalFieldsContainer: true,
+            fields: [
+               {
+                  label: 'Birth Date',
+                  inputProps: {
+                     name: 'birthDate',
+                     required: true,
+                     type: 'date',
+                     onBlur: (e: any) => {
+                        setBirthDate(e.target.value);
+                     },
+                  },
+               },
+               {
+                  label: 'Usia',
+                  inputProps: {
+                     name: 'age',
+                     required: true,
+                     type: 'number',
+                     disabled: true,
+                  },
+               },
+               {
+                  label: 'Gender',
+                  inputProps: {
+                     name: 'gender',
+                     required: true,
+                  },
+                  isSelect: true,
+                  options: [
+                     {
+                        label: 'Male',
+                        value: 'male',
+                     },
+                     {
+                        label: 'Female',
+                        value: 'female',
+                     },
+                  ],
+               },
+               // {
+               //    label: 'Blood Type',
+               //    inputProps: {
+               //       name: 'bloodType',
+               //       required: true,
+               //    },
+               //    isSelect: true,
+               //    options: [
+               //       {
+               //          label: 'O',
+               //          value: 'O',
+               //       },
+               //       {
+               //          label: 'A',
+               //          value: 'A',
+               //       },
+               //       {
+               //          label: 'B',
+               //          value: 'B',
+               //       },
+               //       {
+               //          label: 'AB',
+               //          value: 'AB',
+               //       },
+               //    ],
+               // },
+            ],
+         },
+         // {
+         //    horizontalFieldsContainer: true,
+         //    fields: [
+         //       {
+         //          label: 'Height (cm)',
+         //          inputProps: {
+         //             name: 'heightCm',
+         //             required: true,
+         //             type: 'number',
+         //          },
+         //       },
+         //       {
+         //          label: 'Weight (kg)',
+         //          inputProps: {
+         //             name: 'weightKg',
+         //             required: true,
+         //             type: 'number',
+         //          },
+         //       },
+         //    ],
+         // },
+      ],
+      [initialValues, birthDate, age],
+   );
 
    return (
       <div className="w-fulll h-fulll flex flex-col items-center justify-center overflow-y-scroll">

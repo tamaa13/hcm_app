@@ -219,6 +219,8 @@ function Page() {
       if (appointmentId) fetchMedicalRecord();
    }, [searchParams.get('id')]);
 
+   const [chosenScheduleDay, setChosenScheduleDay] = useState<number>();
+
    const formFields: TFormProps['fields'] = useMemo(
       () =>
          formReady
@@ -269,8 +271,14 @@ function Page() {
                           isSelect: true,
                           options: (schedules || []).map((schedule) => ({
                              label: dayOfWeekAsString(schedule?.dayOfWeek),
-
                              value: String(schedule?.scheduleId),
+                             onChoice: (v:any) =>
+                              setChosenScheduleDay(
+                                 schedules?.find(
+                                    (sched) =>
+                                       Number(sched?.scheduleId) === Number(v),
+                                 )?.dayOfWeek,
+                              ),
                           })),
                        },
                        {
@@ -280,6 +288,36 @@ function Page() {
                              required: true,
                              type: 'date',
                              disabled: params.mode === 'detail',
+                             onChange: (e) => {
+                              if (
+                                 new Date(e.target.value).getTime() <
+                                 new Date().getTime()
+                              ) {
+                                 toast.info(
+                                    'Tanggal harus sama atau lebih dari hari ini',
+                                 );
+                                 e.target.value = '';
+                                 return;
+                              }
+                              const selected = new Date(
+                                 e.target.value,
+                              ).getDay();
+                              const allowedDay =
+                                 Number(chosenScheduleDay) >= 6
+                                    ? 0
+                                    : Number(chosenScheduleDay) + 1;
+
+                              if (allowedDay !== selected) {
+                                 toast.info(
+                                    `Pilih tanggal dengan hari ${dayOfWeekAsString(
+                                       Number(chosenScheduleDay || '0') > 6
+                                          ? 0
+                                          : Number(chosenScheduleDay || '0'),
+                                    )}`,
+                                 );
+                                 e.target.value = '';
+                              }
+                           },
                           },
                        },
                     ],
@@ -351,7 +389,15 @@ function Page() {
                  },
               ]
             : [],
-      [formReady, schedules, chosenDoctor, doctors, patients, initialValues],
+            [
+               formReady,
+               schedules,
+               chosenDoctor,
+               doctors,
+               patients,
+               initialValues,
+               chosenScheduleDay,
+            ],
    );
 
    const medicalRecordsFormFields: any[] = useMemo(() => {
