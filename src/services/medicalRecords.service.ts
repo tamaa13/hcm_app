@@ -117,19 +117,18 @@ export async function updateMedicalRecord(payload: FormData) {
          .where(eq(medicalRecords.recordId, updatedMedicalRecord?.recordId))
          .returning();
 
-         if (!!result?.[0] && result?.[0]?.paymentStatus === 'paid') {
-            await db
-               .update(appointments)
-               .set({ status: 'done' })
-               .where(
-                  eq(
-                     appointments?.appointmentId,
-                     updatedMedicalRecord?.appointmentId,
-                  ),
-               )
-               .returning();
-         }
-   
+      if (!!result?.[0] && result?.[0]?.paymentStatus === 'paid') {
+         await db
+            .update(appointments)
+            .set({ status: 'done' })
+            .where(
+               eq(
+                  appointments?.appointmentId,
+                  updatedMedicalRecord?.appointmentId,
+               ),
+            )
+            .returning();
+      }
 
       return {
          success: !!result,
@@ -211,6 +210,7 @@ export async function getMedicalByAppointmentId(appointmentId?: string) {
       };
    }
 }
+
 export async function deleteMedicalRecord(recordId?: string) {
    try {
       await db

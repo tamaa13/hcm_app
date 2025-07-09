@@ -112,6 +112,7 @@ function PageComponent() {
          });
       }
    }, []);
+
    const [age, setAge] = useState<number>(0);
    const [birthDate, setBirthDate] = useState<string>('');
    useEffect(() => {

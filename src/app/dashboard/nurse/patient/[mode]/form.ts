@@ -146,5 +146,25 @@ export const formFields: TFormProps['fields'] = [
          // },
       ],
    },
-   // {src/app/dashboard/nurse/patient/[mode]/page.tsx
+   // {
+   //    horizontalFieldsContainer: true,
+   //    fields: [
+   //       {
+   //          label: 'Height (cm)',
+   //          inputProps: {
+   //             name: 'heightCm',
+   //             required: true,
+   //             type: 'number',
+   //          },
+   //       },
+   //       {
+   //          label: 'Weight (kg)',
+   //          inputProps: {
+   //             name: 'weightKg',
+   //             required: true,
+   //             type: 'number',
+   //          },
+   //       },
+   //    ],
+   // },
 ];

@@ -19,7 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   })}
                </div>
             </div>
-            <SidebarTrigger className="hover:cursor-pointer" />
+            <SidebarTrigger className="hover:cursor-pointer scale-200 ml-8 mt-8" />
             {children}
          </main>
       </SidebarProvider>

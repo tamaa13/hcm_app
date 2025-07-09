@@ -105,7 +105,7 @@ export default function Form({
             {field.label && <Label htmlFor={name}>{field.label}</Label>}
 
             {field.isSelect ? (
-               fieldOptions?.[field.inputProps?.name as any]?.length > 0 ? (
+               fieldOptions?.[field?.inputProps?.name as any]?.length > 0 ? (
                   <Select
                      value={
                         fieldOptions?.[field.inputProps?.name as any].some(

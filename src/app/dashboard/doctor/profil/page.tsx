@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Form from '@/components/custom/form';
 import { registerDoctor, updateDoctor } from '@/services/doctors.service';
-import { formFields } from './form';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -33,6 +32,7 @@ function Page() {
          toast.error(error.toString());
       }
    }
+
    const formFields: any = useMemo(() => {
       if (
          !!initialValues &&

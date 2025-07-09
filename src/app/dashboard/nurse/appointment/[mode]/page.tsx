@@ -13,6 +13,7 @@ import {
    deleteAppointment,
    getAppointment,
    updateAppointments,
+   validateAppointmentTime,
 } from '@/services/appointments.service';
 import {
    TableCaption,
@@ -45,27 +46,44 @@ function Page() {
 
    async function onSubmit(formData: FormData) {
       try {
-         let response;
+         const requestData: any = {};
+         formData
+            .entries()
+            .forEach((entry) => ((requestData as any)[entry[0]] = entry[1]));
 
-         switch (params.mode) {
-            case 'create':
-               response = await createAppointments(formData);
-               if (!response?.success) {
-                  toast.info(response?.msg);
-               } else {
-                  router.push('/dashboard/nurse/appointment');
-               }
+         const validated = await validateAppointmentTime(
+            requestData?.doctorId,
+            requestData?.scheduleId,
+            requestData?.startTime,
+            requestData?.endTime,
+            requestData?.appointmentDate,
+         );
 
-               return response;
-            case 'detail':
-               response = await updateAppointments(formData);
-               if (!response?.success) {
-                  toast.info(response?.msg);
-               } else {
-                  router.push('/dashboard/nurse/appointment');
-               }
+         if (!validated?.success) toast.info(validated?.msg);
 
-               return response;
+         if (validated?.success) {
+            let response;
+
+            switch (params.mode) {
+               case 'create':
+                  response = await createAppointments(formData);
+                  if (!response?.success) {
+                     toast.info(response?.msg);
+                  } else {
+                     router.push('/dashboard/nurse/appointment');
+                  }
+
+                  return response;
+               case 'detail':
+                  response = await updateAppointments(formData);
+                  if (!response?.success) {
+                     toast.info(response?.msg);
+                  } else {
+                     router.push('/dashboard/nurse/appointment');
+                  }
+
+                  return response;
+            }
          }
       } catch (error: any) {
          toast.error(error.toString());
@@ -220,7 +238,6 @@ function Page() {
    }, [searchParams.get('id')]);
 
    const [chosenScheduleDay, setChosenScheduleDay] = useState<number>();
-
    const formFields: TFormProps['fields'] = useMemo(
       () =>
          formReady
@@ -271,15 +288,16 @@ function Page() {
                           isSelect: true,
                           options: (schedules || []).map((schedule) => ({
                              label: dayOfWeekAsString(schedule?.dayOfWeek),
+
                              value: String(schedule?.scheduleId),
-                             onChoice: (v:any) =>
-                              setChosenScheduleDay(
-                                 schedules?.find(
-                                    (sched) =>
-                                       Number(sched?.scheduleId) === Number(v),
-                                 )?.dayOfWeek,
-                              ),
                           })),
+                          onChoice: (v) =>
+                             setChosenScheduleDay(
+                                schedules?.find(
+                                   (sched) =>
+                                      Number(sched?.scheduleId) === Number(v),
+                                )?.dayOfWeek,
+                             ),
                        },
                        {
                           label: 'Tanggal',
@@ -287,37 +305,41 @@ function Page() {
                              name: 'appointmentDate',
                              required: true,
                              type: 'date',
-                             disabled: params.mode === 'detail',
+                             disabled:
+                                params.mode === 'detail' ||
+                                typeof chosenScheduleDay !== 'number',
                              onChange: (e) => {
-                              if (
-                                 new Date(e.target.value).getTime() <
-                                 new Date().getTime()
-                              ) {
-                                 toast.info(
-                                    'Tanggal harus sama atau lebih dari hari ini',
-                                 );
-                                 e.target.value = '';
-                                 return;
-                              }
-                              const selected = new Date(
-                                 e.target.value,
-                              ).getDay();
-                              const allowedDay =
-                                 Number(chosenScheduleDay) >= 6
-                                    ? 0
-                                    : Number(chosenScheduleDay) + 1;
+                                if (
+                                   new Date(e.target.value).getTime() <
+                                      new Date().getTime() &&
+                                   new Date(e.target.value).getDay() !==
+                                      new Date().getDay()
+                                ) {
+                                   toast.info(
+                                      'Tanggal harus sama atau lebih dari hari ini',
+                                   );
+                                   e.target.value = '';
+                                   return;
+                                }
+                                const selected = new Date(
+                                   e.target.value,
+                                ).getDay();
+                                const allowedDay =
+                                   Number(chosenScheduleDay) >= 6
+                                      ? 0
+                                      : Number(chosenScheduleDay) + 1;
 
-                              if (allowedDay !== selected) {
-                                 toast.info(
-                                    `Pilih tanggal dengan hari ${dayOfWeekAsString(
-                                       Number(chosenScheduleDay || '0') > 6
-                                          ? 0
-                                          : Number(chosenScheduleDay || '0'),
-                                    )}`,
-                                 );
-                                 e.target.value = '';
-                              }
-                           },
+                                if (allowedDay !== selected) {
+                                   toast.info(
+                                      `Pilih tanggal dengan hari ${dayOfWeekAsString(
+                                         Number(chosenScheduleDay || '0') > 6
+                                            ? 0
+                                            : Number(chosenScheduleDay || '0'),
+                                      )}`,
+                                   );
+                                   e.target.value = '';
+                                }
+                             },
                           },
                        },
                     ],
@@ -389,15 +411,15 @@ function Page() {
                  },
               ]
             : [],
-            [
-               formReady,
-               schedules,
-               chosenDoctor,
-               doctors,
-               patients,
-               initialValues,
-               chosenScheduleDay,
-            ],
+      [
+         formReady,
+         schedules,
+         chosenDoctor,
+         doctors,
+         patients,
+         initialValues,
+         chosenScheduleDay,
+      ],
    );
 
    const medicalRecordsFormFields: any[] = useMemo(() => {
