@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import { defineConfig } from 'drizzle-kit';
-import { readFileSync } from 'fs';
 
 export default defineConfig({
    out: './drizzle',

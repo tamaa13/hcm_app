@@ -15,6 +15,7 @@ import {
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { signOut } from '@/services/auth.service';
+import Image from 'next/image';
 
 // Menu items.
 const items = [
@@ -39,7 +40,14 @@ export function DashboardSidebar() {
    return (
       <Sidebar>
          <SidebarHeader className="w-full flex items-center justify-center py-24">
-            <h1 className="font-bold text-4xl">LOGO</h1>
+            <div>
+               <Image
+                  src={`/hcm_logo.png`}
+                  alt="LOGO"
+                  width={160}
+                  height={160}
+               />
+            </div>
          </SidebarHeader>
          <SidebarContent>
             <SidebarGroup>
