@@ -3,7 +3,6 @@ import { eq } from 'drizzle-orm';
 import { db } from '../db/db';
 import { nurses } from '../db/schema';
 import { getAllSchedules } from './schedules.service';
-import Page from '@/app/testing/page';
 import { dayOfWeekAsString } from '@/lib/utils';
 import { getDoctorAppointmentsByDate } from './appointments.service';
 import { getTimeSlots } from '@/lib/timeUtils';
@@ -118,7 +117,9 @@ export async function getAvailableAppointmentStartTimes(
       if (!selectedSchedule) {
          return {
             success: false,
-            msg: `The doctor is not available at ${dayOfWeekAsString(appointmentDay)}`,
+            msg: `The doctor is not available at ${dayOfWeekAsString(
+               appointmentDay,
+            )}`,
          };
       }
 
