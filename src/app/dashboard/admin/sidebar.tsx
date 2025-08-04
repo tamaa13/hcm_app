@@ -1,4 +1,10 @@
-import { Calendar, BookCheckIcon, Bed, History } from 'lucide-react';
+import {
+   Calendar,
+   BookCheckIcon,
+   Bed,
+   History,
+   PersonStanding,
+} from 'lucide-react';
 
 import {
    Sidebar,
@@ -38,6 +44,11 @@ const items = [
       title: 'Histori Medis',
       url: '/dashboard/admin/medicalRecords',
       icon: History,
+   },
+   {
+      title: 'Register Admin/Dokter',
+      url: '/dashboard/admin/registration',
+      icon: PersonStanding,
    },
 ];
 
