@@ -34,6 +34,7 @@ import {
    updateMedicalRecord,
 } from '@/services/medicalRecords.service';
 import { useGlobalContext } from '@/app/globalProvider';
+import { getAvailableAppointmentStartTimes } from '@/services/nurses.service';
 
 function Page() {
    const router = useRouter();
@@ -238,6 +239,47 @@ function Page() {
    }, [searchParams.get('id')]);
 
    const [chosenScheduleDay, setChosenScheduleDay] = useState<number>();
+
+   const [chosenDate, setChosenDate] = useState<Date>('' as any);
+   const [startTimes, setStartTimes] = useState<
+      { label: string; value: string }[]
+   >([]);
+   const [endTimes, setEndTimes] = useState<{ label: string; value: string }[]>(
+      [],
+   );
+   const [selectedStartTime, setSelectedStartTime] = useState<string | null>(
+      null,
+   );
+
+   const fetchStartTimes = useCallback(
+      async function getStartTimes() {
+         const response: any = await getAvailableAppointmentStartTimes(
+            chosenDoctor,
+            chosenDate,
+            'start',
+         );
+
+         console.log({ response });
+         setStartTimes(response?.data);
+      },
+      [chosenDate, chosenDoctor],
+   );
+   const fetchEndTimes = useCallback(
+      async function getStartTimes() {
+         const response: any = await getAvailableAppointmentStartTimes(
+            chosenDoctor,
+            chosenDate,
+            'end',
+         );
+
+         setEndTimes(response?.data);
+      },
+      [chosenDate, chosenDoctor],
+   );
+   useEffect(() => {
+      fetchStartTimes();
+      fetchEndTimes();
+   }, [chosenDoctor, chosenDate]);
    const formFields: TFormProps['fields'] = useMemo(
       () =>
          formReady
@@ -339,6 +381,7 @@ function Page() {
                                    );
                                    e.target.value = '';
                                 }
+                                setChosenDate(new Date(e.target.value));
                              },
                           },
                        },
@@ -352,17 +395,35 @@ function Page() {
                           inputProps: {
                              name: 'startTime',
                              required: true,
-                             type: 'time',
-                             disabled: params.mode === 'detail',
+                             disabled: params.mode === 'detail' || !chosenDate,
                           },
+                          isSelect: true,
+                          options: (startTimes || [])?.map((t: any) => ({
+                             label: t?.start,
+                             value: t?.start,
+                          })),
+                          onChoice: (val) => setSelectedStartTime(val),
                        },
                        {
                           label: 'Sampai',
                           inputProps: {
                              name: 'endTime',
-                             type: 'time',
-                             disabled: params.mode === 'detail',
+                             required: true,
+                             disabled:
+                                params.mode === 'detail' ||
+                                !chosenDate ||
+                                !selectedStartTime,
                           },
+                          isSelect: true,
+                          options: (endTimes || [])
+                             .filter((t: any) => {
+                                if (!selectedStartTime) return true;
+                                return t?.end > selectedStartTime;
+                             })
+                             .map((t: any) => ({
+                                label: t?.end,
+                                value: t?.end,
+                             })),
                        },
                     ],
                  },
@@ -419,6 +480,9 @@ function Page() {
          patients,
          initialValues,
          chosenScheduleDay,
+         startTimes,
+         endTimes,
+         selectedStartTime,
       ],
    );
 

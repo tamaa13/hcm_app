@@ -39,6 +39,8 @@ export async function createAppointments(payload: FormData) {
             msg: 'Doctor data could not be found',
          };
 
+      console.log({ newAppoointment });
+
       const result = (
          await db.insert(appointments).values(newAppoointment).returning()
       )[0];
@@ -230,6 +232,35 @@ export async function getAllAppointments(payload?: FormData) {
             patient: resultData?.patients,
          })),
          msg: 'Data fetched successfully',
+      };
+   } catch (err: any) {
+      console.error(err.toString());
+      return {
+         success: false,
+         msg: `An error occurred ${err.toString()}`,
+      };
+   }
+}
+export async function getDoctorAppointmentsByDate(
+   doctorId: string,
+   date: Date,
+) {
+   try {
+      const appointments = await db.query.appointments.findMany({
+         where: (appointment, { eq, and }) => {
+            return and(
+               eq(
+                  appointment?.appointmentDate as any,
+                  date.toISOString()?.split('T')?.[0],
+               ),
+               eq(appointment?.doctorId as any, doctorId),
+            );
+         },
+      });
+
+      return {
+         success: true,
+         data: appointments,
       };
    } catch (err: any) {
       console.error(err.toString());

@@ -2,6 +2,11 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../db/db';
 import { nurses } from '../db/schema';
+import { getAllSchedules } from './schedules.service';
+import Page from '@/app/testing/page';
+import { dayOfWeekAsString } from '@/lib/utils';
+import { getDoctorAppointmentsByDate } from './appointments.service';
+import { getTimeSlots } from '@/lib/timeUtils';
 
 export async function registerNurse(payload: FormData) {
    try {
@@ -71,6 +76,66 @@ export async function deleteNurse(nurseId: string) {
       return {
          success: true,
          msg: 'Data deleted successfully',
+      };
+   } catch (err: any) {
+      console.error(err.toString());
+      return {
+         success: false,
+         msg: `An error occured ${err.toString()}`,
+      };
+   }
+}
+
+export async function getAvailableAppointmentStartTimes(
+   doctorId: string,
+   date: Date,
+   type: 'start' | 'end',
+) {
+   try {
+      const doctor = await db.query.doctors.findFirst({
+         where: (doctor, { eq }) => eq(doctor.doctorId, doctorId as any),
+      });
+
+      if (!doctor) {
+         return {
+            success: false,
+            msg: `Doctor with id "${doctorId}" doesn't exist`,
+         };
+      }
+
+      const doctorSchedulesFormData = new FormData();
+      doctorSchedulesFormData.append('doctorId', doctorId);
+      const doctorSchedules =
+         ((await getAllSchedules(doctorSchedulesFormData)) as any)?.data?.[0]
+            ?.schedules || [];
+
+      const appointmentDay = date?.getDay();
+
+      const selectedSchedule = doctorSchedules?.filter(
+         (s: any) => s?.dayOfWeek === appointmentDay,
+      )?.[0];
+
+      if (!selectedSchedule) {
+         return {
+            success: false,
+            msg: `The doctor is not available at ${dayOfWeekAsString(appointmentDay)}`,
+         };
+      }
+
+      const existingAppointments = (
+         await getDoctorAppointmentsByDate(doctorId, date)
+      )?.data;
+
+      const { available, unavailable } = getTimeSlots(
+         selectedSchedule,
+         existingAppointments,
+      );
+      console.log({ available, unavailable });
+
+      return {
+         success: true,
+         msg: 'OK',
+         data: available?.map((a) => ({ [type]: a[type] })),
       };
    } catch (err: any) {
       console.error(err.toString());
