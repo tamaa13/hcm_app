@@ -28,6 +28,7 @@ import { Trash2 } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { getMedicalByAppointmentId } from '@/services/medicalRecords.service';
 
 function Page() {
    const router = useRouter();
@@ -165,6 +166,29 @@ function Page() {
 
       init();
    }, []);
+
+   const [medicalRecordInitialValues, setMedicalRecordInitialValues] =
+      useState<any>({});
+   async function fetchMedicalRecord() {
+      const response = await getMedicalByAppointmentId(
+         searchParams.get('id') || '',
+      );
+
+      console.log({ response });
+
+      if (response.success) {
+         setMedicalRecordInitialValues({
+            ...response.data,
+            patientName: response?.data?.patient?.name,
+            doctorName: response?.data?.doctor?.name,
+            nurseName: response?.data?.nurse?.name,
+         });
+      }
+   }
+   useEffect(() => {
+      const appointmentId = searchParams.get('id');
+      if (appointmentId) fetchMedicalRecord();
+   }, [searchParams.get('id')]);
 
    const [chosenDoctor, setChosenDoctor] = useState<any>();
    useEffect(() => {
@@ -304,6 +328,194 @@ function Page() {
       [formReady, schedules, chosenDoctor, doctors, patients],
    );
 
+   const medicalRecordsFormFields: any[] = useMemo(() => {
+      if (Object.keys(medicalRecordInitialValues).length)
+         return [
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Kode Kunjungan',
+                     inputProps: {
+                        name: 'appointmentId',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Kode Pasien',
+                     inputProps: {
+                        name: 'patientId',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Nama Pasien',
+                     inputProps: {
+                        name: 'patientName',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Kode Dokter',
+                     inputProps: {
+                        name: 'doctorId',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Nama Dokter',
+                     inputProps: {
+                        name: 'doctorName',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Kode Admin',
+                     inputProps: {
+                        name: 'nurseId',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Nama Admin',
+                     inputProps: {
+                        name: 'nurseName',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Diagnosis',
+                     inputProps: {
+                        name: 'diagnosis',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Gejala',
+                     inputProps: {
+                        name: 'symptoms',
+                        required: true,
+                        type: 'text',
+                        disabled: true,
+                     },
+                  },
+               ],
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Anemnesis',
+                     inputProps: {
+                        name: 'anemnesis',
+                        required: true,
+                        disabled: true,
+                     },
+                     isTextarea: true,
+                  },
+                  {
+                     label: 'Penanganan',
+                     inputProps: {
+                        name: 'treatment',
+                        required: true,
+                        disabled: true,
+                     },
+                     isTextarea: true,
+                  },
+               ],
+            },
+            {
+               label: 'Catatan',
+               inputProps: {
+                  name: 'notes',
+                  required: true,
+                  disabled: true,
+               },
+               isTextarea: true,
+            },
+            {
+               label: 'Resep',
+               inputProps: {
+                  name: 'recipe',
+                  required: true,
+                  disabled: true,
+               },
+               isTextarea: true,
+            },
+            {
+               horizontalFieldsContainer: true,
+               fields: [
+                  {
+                     label: 'Biaya',
+                     inputProps: {
+                        name: 'totalFee',
+                        required: true,
+                        type: 'number',
+                        disabled: true,
+                     },
+                  },
+                  {
+                     label: 'Status Pembayaran',
+                     inputProps: {
+                        name: 'paymentStatus',
+                        required: true,
+                        disabled: true,
+                     },
+                     isSelect: true,
+                     options: [
+                        {
+                           label: 'Lunas',
+                           value: 'paid',
+                        },
+                        {
+                           label: 'Belum Lunas',
+                           value: 'unpaid',
+                        },
+                     ],
+                  },
+               ],
+            },
+         ];
+
+      return [];
+   }, [medicalRecordInitialValues]);
+
    return (
       <div className="w-fulll h-fulll flex flex-col items-center justify-center overflow-y-scroll">
          <div className="w-full p-8">
@@ -340,6 +552,19 @@ function Page() {
                   )} */}
                </>
             )}
+            <div className="mt-8">
+               {Object.keys(medicalRecordInitialValues)?.length > 0 && (
+                  <Form
+                     title="Histori Medis"
+                     description=""
+                     submitButtonCaption={'Simpan'}
+                     fields={medicalRecordsFormFields}
+                     // actionCallback={onMedicalRecordSubmit}
+                     initialValues={medicalRecordInitialValues}
+                     enableSubmitButton={false}
+                  />
+               )}
+            </div>
             {params.mode === 'create' && (
                <div className="w-full my-8 text-center">
                   <h2 className="text-lg font-semibold my-4">

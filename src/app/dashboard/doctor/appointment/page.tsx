@@ -12,15 +12,19 @@ import {
 } from '@/components/ui/table';
 import {
    getAllAppointments,
+   getAppointment,
    getAppointmentTotals,
+   updateAppointments,
 } from '@/services/appointments.service';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useGlobalContext } from '@/app/globalProvider';
+import { toast } from 'react-toastify';
 
 function Page() {
    const router = useRouter();
@@ -30,6 +34,8 @@ function Page() {
    const [page, setPage] = useState(1);
    const limit = 10;
    const [hasNextPage, setHasNextPage] = useState(true);
+
+   const { states } = useGlobalContext();
 
    const [appointmentTotals, setAppointmentTotals] = useState<any[]>([]);
    async function fetchAppointmentTotals() {
@@ -47,6 +53,8 @@ function Page() {
 
       const result = (await getAllAppointments(payload))?.data || [];
 
+      console.log({ states });
+
       setAppointments(result);
       setHasNextPage(result.length === limit);
    }
@@ -58,6 +66,35 @@ function Page() {
    useEffect(() => {
       fetchAppointments();
    }, [page]);
+
+   const treat = useCallback(
+      async (appointmentId: string) => {
+         try {
+            const appointment: any = await getAppointment(appointmentId);
+
+            const formData = new FormData();
+            Object.keys(appointment?.data || {})?.map((key) => {
+               formData?.append(key, appointment?.data?.[key]);
+            });
+            formData?.append('status', 'treating');
+
+            const response = await updateAppointments(formData);
+
+            console.log({ response });
+
+            if (!response?.success) {
+               throw new Error(`Error: ${response?.msg}`);
+            } else {
+               return router.push(
+                  `/dashboard/doctor/appointment/treat?id=${appointmentId}`,
+               );
+            }
+         } catch (err: any) {
+            toast.error(err?.toString());
+         }
+      },
+      [appointments],
+   );
 
    const debouncedSearch = useDebounce(search, 500);
    useEffect(() => {
@@ -159,9 +196,7 @@ function Page() {
                                     className="hover:cursor-pointer"
                                     onClick={(e) => {
                                        e.stopPropagation();
-                                       router.push(
-                                          `/dashboard/doctor/appointment/treat?id=${appointment.appointmentId}`,
-                                       );
+                                       treat(appointment?.appointmentId || '');
                                     }}
                                  >
                                     Periksa

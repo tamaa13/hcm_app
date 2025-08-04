@@ -43,6 +43,10 @@ function Page() {
 
    const [initialValues, setInitialValues] = useState<any>({});
 
+   useEffect(() => {
+      console.log({ initialValues });
+   }, [initialValues]);
+
    const { states } = useGlobalContext();
 
    async function onSubmit(formData: FormData) {
@@ -181,6 +185,10 @@ function Page() {
                   scheduleId: String(response?.data?.scheduleId),
                });
             }
+         } else {
+            setInitialValues({
+               status: 'pending',
+            });
          }
 
          await fetchSchedulesTable();
@@ -225,6 +233,8 @@ function Page() {
       const response = await getMedicalByAppointmentId(
          searchParams.get('id') || '',
       );
+
+      console.log({ response });
 
       if (response.success) {
          setMedicalRecordInitialValues({
@@ -472,10 +482,7 @@ function Page() {
                           inputProps: {
                              name: 'status',
                              required: true,
-                             disabled:
-                                params.mode === 'detail' &&
-                                !!Object.keys(medicalRecordInitialValues)
-                                   .length,
+                             disabled: true,
                           },
                           isSelect: true,
                           options: [
@@ -483,18 +490,18 @@ function Page() {
                                 label: 'Sedang Antri',
                                 value: 'pending',
                              },
-                             {
-                                label: 'Sedang Tindakan',
-                                value: 'treating',
-                             },
-                             {
-                                label: 'Pembayaran',
-                                value: 'payment',
-                             },
-                             {
-                                label: 'Selesai',
-                                value: 'done',
-                             },
+                             //   {
+                             //      label: 'Sedang Tindakan',
+                             //      value: 'treating',
+                             //   },
+                             //   {
+                             //      label: 'Pembayaran',
+                             //      value: 'payment',
+                             //   },
+                             //   {
+                             //      label: 'Selesai',
+                             //      value: 'done',
+                             //   },
                           ],
                        },
                     ],
@@ -723,10 +730,9 @@ function Page() {
                         }
                         fields={formFields}
                         actionCallback={onSubmit}
-                        initialValues={
-                           params.mode === 'detail' ? initialValues : undefined
-                        }
+                        initialValues={initialValues}
                         enableSubmitButton={
+                           params?.mode === 'create' &&
                            !Object.keys(medicalRecordInitialValues).length
                         }
                      />

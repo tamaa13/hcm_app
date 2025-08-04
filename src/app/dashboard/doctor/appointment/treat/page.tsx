@@ -82,6 +82,8 @@ function Page() {
             }));
          }
 
+         console.log();
+
          setFormReady(true);
       }
 
@@ -264,10 +266,6 @@ function Page() {
             },
             isSelect: true,
             options: [
-               {
-                  label: 'Sedang antri',
-                  value: 'pending',
-               },
                {
                   label: 'Sedang tindakan',
                   value: 'treating',

@@ -164,6 +164,11 @@ function PageComponent() {
                         <TableRow
                            key={appointment.appointmentId}
                            className="hover:cursor-pointer"
+                           onClick={() =>
+                              router.push(
+                                 `/dashboard/doctor/appointment/detail?id=${appointment.appointmentId}`,
+                              )
+                           }
                         >
                            <TableCell className="text-center">
                               {i + 1}
