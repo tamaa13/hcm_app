@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 function Page() {
    const router = useRouter();
    useEffect(() => {
-      router.replace('/dashboard/nurse/patient');
+      router.replace('/dashboard/admin/patient');
    }, []);
 
    return <div></div>;

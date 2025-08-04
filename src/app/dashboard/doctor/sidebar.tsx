@@ -20,7 +20,7 @@ import Image from 'next/image';
 // Menu items.
 const items = [
    {
-      title: 'Kunjungan',
+      title: 'Kunjungan Pasien',
       url: '/dashboard/doctor/appointment',
       icon: BookCheckIcon,
    },
@@ -30,15 +30,15 @@ const items = [
       icon: Bed,
    },
    {
-      title: 'Jadwal',
+      title: 'Jadwal Praktik',
       url: '/dashboard/doctor/schedule',
       icon: Calendar,
    },
-   {
-      title: 'Profil',
-      url: '/dashboard/doctor/profil',
-      icon: PersonStanding,
-   },
+   // {
+   //    title: 'Profil',
+   //    url: '/dashboard/doctor/profil',
+   //    icon: PersonStanding,
+   // },
 ];
 
 export function DashboardSidebar() {

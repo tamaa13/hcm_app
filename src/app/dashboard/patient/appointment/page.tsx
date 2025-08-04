@@ -101,7 +101,7 @@ function Page() {
                />
                <Link href={`/dashboard/patient/appointment/create`}>
                   <Button className="hover:cursor-pointer">
-                     Buat Kunjungan
+                     Reservasi Konsultasi
                   </Button>
                </Link>
             </div>

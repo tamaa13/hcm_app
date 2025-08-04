@@ -21,22 +21,22 @@ import Image from 'next/image';
 const items = [
    {
       title: 'Kunjungan',
-      url: '/dashboard/nurse/appointment',
+      url: '/dashboard/admin/appointment',
       icon: BookCheckIcon,
    },
    {
       title: 'Pasien',
-      url: '/dashboard/nurse/patient',
+      url: '/dashboard/admin/patient',
       icon: Bed,
    },
    {
-      title: 'Jadwal',
-      url: '/dashboard/nurse/schedule',
+      title: 'Jadwal Praktik Dokter',
+      url: '/dashboard/admin/schedule',
       icon: Calendar,
    },
    {
       title: 'Histori Medis',
-      url: '/dashboard/nurse/medicalRecords',
+      url: '/dashboard/admin/medicalRecords',
       icon: History,
    },
 ];

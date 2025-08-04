@@ -32,7 +32,7 @@ function Page() {
       <div className="w-screen h-screen flex items-center justify-center overflow-y-scroll">
          <div className="w-full sm:w-md md:w-lg lg:w-xl xl:w-2xl 2xl:w-3xl">
             <Form
-               title="Nurse Registration"
+               title="Admin Registration"
                description="Please fill in the form below"
                submitButtonCaption="Register"
                fields={formFields}

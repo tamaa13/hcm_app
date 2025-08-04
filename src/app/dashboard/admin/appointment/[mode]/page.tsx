@@ -71,7 +71,7 @@ function Page() {
                   if (!response?.success) {
                      toast.info(response?.msg);
                   } else {
-                     router.push('/dashboard/nurse/appointment');
+                     router.push('/dashboard/admin/appointment');
                   }
 
                   return response;
@@ -80,7 +80,7 @@ function Page() {
                   if (!response?.success) {
                      toast.info(response?.msg);
                   } else {
-                     router.push('/dashboard/nurse/appointment');
+                     router.push('/dashboard/admin/appointment');
                   }
 
                   return response;
@@ -98,7 +98,7 @@ function Page() {
          if (!response?.success) {
             toast.info(response?.msg);
          } else {
-            router.push('/dashboard/nurse/appointment');
+            router.push('/dashboard/admin/appointment');
          }
       } catch (error: any) {
          toast.error(error.toString());
@@ -405,7 +405,7 @@ function Page() {
                           onChoice: (val) => setSelectedStartTime(val),
                        },
                        {
-                          label: 'Sampai',
+                          label: 'Waktu Selesai',
                           inputProps: {
                              name: 'endTime',
                              required: true,
@@ -686,7 +686,7 @@ function Page() {
                {formReady && (
                   <>
                      <Form
-                        title="Informasi Jadwal Kunjungan"
+                        title="Jadwal konsultasi/tindakan"
                         description="Informasi detail jadwal kunjungan"
                         submitButtonCaption={
                            params.mode === 'create' ? 'Buat' : 'Simpan'

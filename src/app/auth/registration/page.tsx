@@ -34,8 +34,8 @@ export default function Page() {
                   </CardContent>
                </Card>
             </Link>
-            <Link
-               href="/auth/registration/nurse"
+            {/* <Link
+               href="/auth/registration/admin"
                className="w-full max-w-sm hover:cursor-pointer hover:scale-110 transition-all duration-150"
             >
                <Card>
@@ -65,7 +65,7 @@ export default function Page() {
                      <Image src="/doctor.png" width={160} height={160} alt="" />
                   </CardContent>
                </Card>
-            </Link>
+            </Link> */}
          </div>
       </div>
    );

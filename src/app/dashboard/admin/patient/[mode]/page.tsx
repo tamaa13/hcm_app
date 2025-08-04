@@ -46,7 +46,7 @@ function PageComponent() {
                if (!response?.success) {
                   toast.info(response?.msg);
                } else {
-                  router.push('/dashboard/nurse/patient');
+                  router.push('/dashboard/admin/patient');
                }
 
                return response;
@@ -55,7 +55,7 @@ function PageComponent() {
                if (!response?.success) {
                   toast.info(response?.msg);
                } else {
-                  router.push('/dashboard/nurse/patient');
+                  router.push('/dashboard/admin/patient');
                }
 
                return response;
@@ -72,7 +72,7 @@ function PageComponent() {
          if (!response?.success) {
             toast.info(response?.msg);
          } else {
-            router.push('/dashboard/nurse/patient');
+            router.push('/dashboard/admin/patient');
          }
       } catch (error: any) {
          toast.error(error.toString());
@@ -333,7 +333,7 @@ function PageComponent() {
                <div className="my-4 flex items-center justify-between w-full">
                   <h2 className="text-xl font-semibold">List Kunjungan</h2>
                   <Link
-                     href={`/dashboard/nurse/appointment/create?patientId=${searchParams.get(
+                     href={`/dashboard/admin/appointment/create?patientId=${searchParams.get(
                         'id',
                      )}`}
                   >
@@ -361,7 +361,7 @@ function PageComponent() {
                            className="hover:cursor-pointer"
                            onClick={() => {
                               router.push(
-                                 `/dashboard/nurse/appointment/detail?id=${
+                                 `/dashboard/admin/appointment/detail?id=${
                                     appointment?.appointmentId || ''
                                  }`,
                               );

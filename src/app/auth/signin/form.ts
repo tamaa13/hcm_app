@@ -30,7 +30,7 @@ export const formFields: TFormProps['fields'] = [
             value: 'patient',
          },
          {
-            label: 'Nurse',
+            label: 'Admin',
             value: 'nurse',
          },
          {

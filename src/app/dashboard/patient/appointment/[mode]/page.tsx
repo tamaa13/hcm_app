@@ -366,7 +366,7 @@ function Page() {
                           onChoice: (val) => setSelectedStartTime(val),
                        },
                        {
-                          label: 'Sampai',
+                          label: 'Waktu Selesai',
                           inputProps: {
                              name: 'endTime',
                              required: true,
@@ -443,7 +443,7 @@ function Page() {
                   <Form
                      title="Pendaftaran Jadwal Kunjungan"
                      description="Silahkan mengisi detail jadwal kunjungan"
-                     submitButtonCaption={'Buat Kunjungan'}
+                     submitButtonCaption={'Reservasi konsultasi'}
                      fields={formFields}
                      actionCallback={onSubmit}
                      initialValues={initialValues}

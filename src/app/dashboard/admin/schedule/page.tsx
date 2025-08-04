@@ -59,9 +59,9 @@ function Page() {
                   onChange={(e) => setSearch(e.target.value)}
                   className="max-w-sm"
                />
-               <Link href={`/dashboard/nurse/schedule/create`}>
+               <Link href={`/dashboard/admin/schedule/create`}>
                   <Button className="hover:cursor-pointer">
-                     Tambah Jadwal
+                     Penjadwalan Praktik Dokter
                   </Button>
                </Link>
             </div>
@@ -101,7 +101,7 @@ function Page() {
                                  )?.scheduleId;
                                  if (scheduleId)
                                     router.push(
-                                       `/dashboard/nurse/schedule/detail?id=${scheduleId}`,
+                                       `/dashboard/admin/schedule/detail?id=${scheduleId}`,
                                     );
                               }}
                            >
@@ -125,7 +125,7 @@ function Page() {
                                  )?.scheduleId;
                                  if (scheduleId)
                                     router.push(
-                                       `/dashboard/nurse/schedule/detail?id=${scheduleId}`,
+                                       `/dashboard/admin/schedule/detail?id=${scheduleId}`,
                                     );
                               }}
                            >
@@ -149,7 +149,7 @@ function Page() {
                                  )?.scheduleId;
                                  if (scheduleId)
                                     router.push(
-                                       `/dashboard/nurse/schedule/detail?id=${scheduleId}`,
+                                       `/dashboard/admin/schedule/detail?id=${scheduleId}`,
                                     );
                               }}
                            >
@@ -173,7 +173,7 @@ function Page() {
                                  )?.scheduleId;
                                  if (scheduleId)
                                     router.push(
-                                       `/dashboard/nurse/schedule/detail?id=${scheduleId}`,
+                                       `/dashboard/admin/schedule/detail?id=${scheduleId}`,
                                     );
                               }}
                            >
@@ -197,7 +197,7 @@ function Page() {
                                  )?.scheduleId;
                                  if (scheduleId)
                                     router.push(
-                                       `/dashboard/nurse/schedule/detail?id=${scheduleId}`,
+                                       `/dashboard/admin/schedule/detail?id=${scheduleId}`,
                                     );
                               }}
                            >
@@ -221,7 +221,7 @@ function Page() {
                                  )?.scheduleId;
                                  if (scheduleId)
                                     router.push(
-                                       `/dashboard/nurse/schedule/detail?id=${scheduleId}`,
+                                       `/dashboard/admin/schedule/detail?id=${scheduleId}`,
                                     );
                               }}
                            >

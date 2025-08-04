@@ -250,7 +250,7 @@ function Page() {
                           },
                        },
                        {
-                          label: 'Sampai',
+                          label: 'Waktu Selesai',
                           inputProps: {
                              name: 'endTime',
                              type: 'time',

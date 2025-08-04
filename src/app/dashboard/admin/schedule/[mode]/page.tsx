@@ -29,7 +29,7 @@ function Page() {
                if (!response?.success) {
                   toast.info(response?.msg);
                } else {
-                  router.push('/dashboard/nurse/schedule');
+                  router.push('/dashboard/admin/schedule');
                }
 
                return response;
@@ -38,7 +38,7 @@ function Page() {
                if (!response?.success) {
                   toast.info(response?.msg);
                } else {
-                  router.push('/dashboard/nurse/schedule');
+                  router.push('/dashboard/admin/schedule');
                }
 
                return response;
@@ -55,7 +55,7 @@ function Page() {
          if (!response?.success) {
             toast.info(response?.msg);
          } else {
-            router.push('/dashboard/nurse/schedule');
+            router.push('/dashboard/admin/schedule');
          }
       } catch (error: any) {
          toast.error(error.toString());

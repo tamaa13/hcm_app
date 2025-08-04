@@ -25,15 +25,15 @@ const items = [
       icon: BookCheckIcon,
    },
    {
-      title: 'Jadwal',
+      title: 'Jadwal Praktik Dokter',
       url: '/dashboard/patient/schedule',
       icon: Calendar,
    },
-   {
-      title: 'Histori Medis',
-      url: '/dashboard/patient/medicalRecords',
-      icon: History,
-   },
+   // {
+   //    title: 'Histori Medis',
+   //    url: '/dashboard/patient/medicalRecords',
+   //    icon: History,
+   // },
 ];
 
 export function DashboardSidebar() {

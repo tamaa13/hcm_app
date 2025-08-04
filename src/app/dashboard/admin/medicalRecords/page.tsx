@@ -58,7 +58,7 @@ function Page() {
                   onChange={(e) => setSearch(e.target.value)}
                   className="max-w-sm"
                />
-               {/* <Link href={'/dashboard/nurse/medicalRecords/create'}>
+               {/* <Link href={'/dashboard/admin/medicalRecords/create'}>
                   <Button className="hover:cursor-pointer">
                      Tambah Pasien
                   </Button>
@@ -94,7 +94,7 @@ function Page() {
                               className="hover:cursor-pointer"
                               onClick={() =>
                                  router.push(
-                                    `/dashboard/nurse/medicalRecords/detail?id=${medicalRecord?.medical_records?.recordId}`,
+                                    `/dashboard/admin/medicalRecords/detail?id=${medicalRecord?.medical_records?.recordId}`,
                                  )
                               }
                            >
