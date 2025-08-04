@@ -320,7 +320,7 @@ function Page() {
                     horizontalFieldsContainer: true,
                     fields: [
                        {
-                          label: 'Jadwal',
+                          label: 'Hari',
                           inputProps: {
                              name: 'scheduleId',
                              required: true,
