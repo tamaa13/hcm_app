@@ -52,26 +52,28 @@ function Page() {
             .entries()
             .forEach((entry) => ((requestData as any)[entry[0]] = entry[1]));
 
-         const validated = await validateAppointmentTime(
-            requestData?.doctorId,
-            requestData?.scheduleId,
-            requestData?.startTime,
-            requestData?.endTime,
-            requestData?.appointmentDate,
-         );
-
-         if (!validated?.success) toast.info(validated?.msg);
-
-         if (validated?.success) {
+         {
             let response;
 
             switch (params.mode) {
                case 'create':
-                  response = await createAppointments(formData);
-                  if (!response?.success) {
-                     toast.info(response?.msg);
-                  } else {
-                     router.push('/dashboard/admin/appointment');
+                  const validated = await validateAppointmentTime(
+                     requestData?.doctorId,
+                     requestData?.scheduleId,
+                     requestData?.startTime,
+                     requestData?.endTime,
+                     requestData?.appointmentDate,
+                  );
+
+                  if (!validated?.success) toast.info(validated?.msg);
+
+                  if (validated?.success) {
+                     response = await createAppointments(formData);
+                     if (!response?.success) {
+                        toast.info(response?.msg);
+                     } else {
+                        router.push('/dashboard/admin/appointment');
+                     }
                   }
 
                   return response;
@@ -259,7 +261,6 @@ function Page() {
             'start',
          );
 
-         console.log({ response });
          setStartTimes(response?.data);
       },
       [chosenDate, chosenDoctor],
@@ -277,8 +278,10 @@ function Page() {
       [chosenDate, chosenDoctor],
    );
    useEffect(() => {
-      fetchStartTimes();
-      fetchEndTimes();
+      if (params?.mode !== 'detail') {
+         fetchStartTimes();
+         fetchEndTimes();
+      }
    }, [chosenDoctor, chosenDate]);
    const formFields: TFormProps['fields'] = useMemo(
       () =>
@@ -389,43 +392,69 @@ function Page() {
                  },
                  {
                     horizontalFieldsContainer: true,
-                    fields: [
-                       {
-                          label: 'Waktu Mulai',
-                          inputProps: {
-                             name: 'startTime',
-                             required: true,
-                             disabled: params.mode === 'detail' || !chosenDate,
-                          },
-                          isSelect: true,
-                          options: (startTimes || [])?.map((t: any) => ({
-                             label: t?.start,
-                             value: t?.start,
-                          })),
-                          onChoice: (val) => setSelectedStartTime(val),
-                       },
-                       {
-                          label: 'Waktu Selesai',
-                          inputProps: {
-                             name: 'endTime',
-                             required: true,
-                             disabled:
-                                params.mode === 'detail' ||
-                                !chosenDate ||
-                                !selectedStartTime,
-                          },
-                          isSelect: true,
-                          options: (endTimes || [])
-                             .filter((t: any) => {
-                                if (!selectedStartTime) return true;
-                                return t?.end > selectedStartTime;
-                             })
-                             .map((t: any) => ({
-                                label: t?.end,
-                                value: t?.end,
-                             })),
-                       },
-                    ],
+                    fields:
+                       params?.mode === 'create'
+                          ? [
+                               {
+                                  label: 'Waktu Mulai',
+                                  inputProps: {
+                                     name: 'startTime',
+                                     required: true,
+                                     disabled: !chosenDate,
+                                  },
+                                  isSelect: true,
+                                  options: (startTimes || [])?.map(
+                                     (t: any) => ({
+                                        label: t?.start,
+                                        value: t?.start,
+                                     }),
+                                  ),
+                                  onChoice: (val) => setSelectedStartTime(val),
+                               },
+                               {
+                                  label: 'Waktu Selesai',
+                                  inputProps: {
+                                     name: 'endTime',
+                                     required: true,
+                                     disabled:
+                                        !chosenDate || !selectedStartTime,
+                                  },
+                                  isSelect: true,
+                                  options: (endTimes || [])
+                                     .filter((t: any) => {
+                                        if (!selectedStartTime) return true;
+                                        return t?.end > selectedStartTime;
+                                     })
+                                     .map((t: any) => ({
+                                        label: t?.end,
+                                        value: t?.end,
+                                     })),
+                               },
+                            ]
+                          : [
+                               {
+                                  label: 'Waktu Mulai',
+                                  inputProps: {
+                                     name: 'startTime',
+                                     required: true,
+                                     disabled:
+                                        params.mode === 'detail' || !chosenDate,
+                                     type: 'time',
+                                  },
+                               },
+                               {
+                                  label: 'Waktu Selesai',
+                                  inputProps: {
+                                     name: 'endTime',
+                                     required: true,
+                                     disabled:
+                                        params.mode === 'detail' ||
+                                        !chosenDate ||
+                                        !selectedStartTime,
+                                     type: 'time',
+                                  },
+                               },
+                            ],
                  },
                  {
                     horizontalFieldsContainer: true,
@@ -483,6 +512,7 @@ function Page() {
          startTimes,
          endTimes,
          selectedStartTime,
+         params?.mode,
       ],
    );
 

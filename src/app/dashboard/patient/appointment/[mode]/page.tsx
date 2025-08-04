@@ -350,43 +350,69 @@ function Page() {
                  },
                  {
                     horizontalFieldsContainer: true,
-                    fields: [
-                       {
-                          label: 'Waktu Mulai',
-                          inputProps: {
-                             name: 'startTime',
-                             required: true,
-                             disabled: params.mode === 'detail' || !chosenDate,
-                          },
-                          isSelect: true,
-                          options: (startTimes || [])?.map((t: any) => ({
-                             label: t?.start,
-                             value: t?.start,
-                          })),
-                          onChoice: (val) => setSelectedStartTime(val),
-                       },
-                       {
-                          label: 'Waktu Selesai',
-                          inputProps: {
-                             name: 'endTime',
-                             required: true,
-                             disabled:
-                                params.mode === 'detail' ||
-                                !chosenDate ||
-                                !selectedStartTime,
-                          },
-                          isSelect: true,
-                          options: (endTimes || [])
-                             .filter((t: any) => {
-                                if (!selectedStartTime) return true;
-                                return t?.end > selectedStartTime;
-                             })
-                             .map((t: any) => ({
-                                label: t?.end,
-                                value: t?.end,
-                             })),
-                       },
-                    ],
+                    fields:
+                       params?.mode === 'create'
+                          ? [
+                               {
+                                  label: 'Waktu Mulai',
+                                  inputProps: {
+                                     name: 'startTime',
+                                     required: true,
+                                     disabled: !chosenDate,
+                                  },
+                                  isSelect: true,
+                                  options: (startTimes || [])?.map(
+                                     (t: any) => ({
+                                        label: t?.start,
+                                        value: t?.start,
+                                     }),
+                                  ),
+                                  onChoice: (val) => setSelectedStartTime(val),
+                               },
+                               {
+                                  label: 'Waktu Selesai',
+                                  inputProps: {
+                                     name: 'endTime',
+                                     required: true,
+                                     disabled:
+                                        !chosenDate || !selectedStartTime,
+                                  },
+                                  isSelect: true,
+                                  options: (endTimes || [])
+                                     .filter((t: any) => {
+                                        if (!selectedStartTime) return true;
+                                        return t?.end > selectedStartTime;
+                                     })
+                                     .map((t: any) => ({
+                                        label: t?.end,
+                                        value: t?.end,
+                                     })),
+                               },
+                            ]
+                          : [
+                               {
+                                  label: 'Waktu Mulai',
+                                  inputProps: {
+                                     name: 'startTime',
+                                     required: true,
+                                     disabled:
+                                        params.mode === 'detail' || !chosenDate,
+                                     type: 'time',
+                                  },
+                               },
+                               {
+                                  label: 'Waktu Selesai',
+                                  inputProps: {
+                                     name: 'endTime',
+                                     required: true,
+                                     disabled:
+                                        params.mode === 'detail' ||
+                                        !chosenDate ||
+                                        !selectedStartTime,
+                                     type: 'time',
+                                  },
+                               },
+                            ],
                  },
                  {
                     horizontalFieldsContainer: true,
