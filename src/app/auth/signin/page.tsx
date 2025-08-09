@@ -1,28 +1,36 @@
 'use client';
-import React from 'react';
+import React, { useCallback } from 'react';
 import Form from '@/components/custom/form';
 import { formFields } from './form';
 import { signIn } from '@/services/auth.service';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useGlobalContext } from '@/app/globalProvider';
 
 function Page() {
    const router = useRouter();
-   async function onSubmit(formData: FormData) {
-      try {
-         const response = await signIn(formData);
 
-         if (!response.success) {
-            toast.info(response.msg);
+   const { actions } = useGlobalContext();
+   const onSubmit = useCallback(
+      async (formData: FormData) => {
+         try {
+            const response = await signIn(formData);
+
+            if (!response.success) {
+               toast.info(response.msg);
+            }
+
+
+            router.replace(`/dashboard/${response.data?.type}`);
+            actions.setUser(response?.data);
+            return response;
+         } catch (error: any) {
+            toast.error(error.toString());
          }
-
-         router.replace(`/dashboard/${response.data?.type}`);
-         return response;
-      } catch (error: any) {
-         toast.error(error.toString());
-      }
-   }
+      },
+      [actions],
+   );
 
    return (
       <div className="w-screen h-screen flex items-center justify-center overflow-y-scroll">
